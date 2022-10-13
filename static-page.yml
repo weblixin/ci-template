@@ -1,0 +1,45 @@
+name: auto deploy
+on:
+  push:
+    branches:
+      - master #2020年10月后github新建仓库默认分支改为main，注意更改
+  release:
+    types:
+    - published
+
+# Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Allow one concurrent deployment
+concurrency:
+  group: "pages"
+  cancel-in-progress: true
+
+jobs:
+
+  depoly: 
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: 检查分支
+        uses: actions/checkout@v2
+        with:
+          ref: master #2020年10月后github新建仓库默认分支改为main，注意更改
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v2
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v1
+        with:
+          # Upload entire repository
+          path: '.'
+
+      - name: 发布到GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v1
